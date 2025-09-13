@@ -1,0 +1,27 @@
+[
+  {
+    "arguments": [
+      "/sbin/avr-gcc",
+      "-DF_CPU=40000000UL",
+      "-Os",
+      "-mmcu=attiny412",
+      "-std=gnu99",
+      "-funsigned-char",
+      "-funsigned-bitfields",
+      "-fpack-struct",
+      "-fshort-enums",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-Wall",
+      "-Wstrict-prototypes",
+      "-Wa,-adhlns=main.lst",
+      "-c",
+      "-o",
+      "main.o",
+      "main.c"
+    ],
+    "directory": "/home/nikl/Documents/fab_academy/Week_10/pomodoro_timer/code",
+    "file": "/home/nikl/Documents/fab_academy/Week_10/pomodoro_timer/code/main.c",
+    "output": "/home/nikl/Documents/fab_academy/Week_10/pomodoro_timer/code/main.o"
+  }
+]
