@@ -1,0 +1,2 @@
+default_fqbn: megaTinyCore:megaavr:atxy2
+default_port: /dev/ttyACM0

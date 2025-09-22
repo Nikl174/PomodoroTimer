@@ -1,0 +1,45 @@
+@startuml
+
+[*] --> P_NONE
+
+P_NONE --> Pomodoro : StartStopButton
+P_PAUSED --> Pomodoro: StartStopButton
+P_PAUSED <-- Pomodoro: StartStopButton
+/'P_PAUSED --> P_SHORT_BREAK: StartStopButton'/
+/'P_PAUSED <-- P_SHORT_BREAK: StartStopButton'/
+/'P_PAUSED --> P_LONG_BREAK: StartStopButton'/
+/'P_PAUSED <-- P_LONG_BREAK : StartStopButton'/
+
+state Pomodoro {
+
+	P_POMODORO --> P_SHORT_BREAK : after POMODORO_SEC
+	P_POMODORO --> P_LONG_BREAK : after POMODORO_SEC and 4 Iterations
+	P_SHORT_BREAK --> P_POMODORO : after SHORT_BREAK_SEC
+	P_LONG_BREAK --> P_POMODORO : after LONG_BREAK_SEC
+	P_POMODORO --> P_SHORT_BREAK : SkipButton
+	P_SHORT_BREAK --> P_POMODORO : SkipButton
+	P_POMODORO --> P_LONG_BREAK : SkipButton
+	P_LONG_BREAK --> P_POMODORO : SkipButton
+}
+
+/'P_POMODORO --> [*]'/
+/'P_SHORT_BREAK --> [*]'/
+/'P_LONG_BREAK  --> [*]'/
+Pomodoro -down-> [*]
+
+P_POMODORO --> P_SHOW_CYCLES
+P_SHORT_BREAK --> P_SHOW_CYCLES
+P_LONG_BREAK --> P_SHOW_CYCLES
+P_PAUSED --> P_SHOW_CYCLES
+
+P_NONE : LED 12 is blinking
+P_NONE : TODO
+
+P_POMODORO : Show Number of minutes passed / 12
+P_SHORT_BREAK : Show Number of minutes Left / 12
+P_LONG_BREAK : Show Number of minutes Left / 12
+P_PAUSED : Blinking Passed Number of minutes
+
+
+
+@enduml
