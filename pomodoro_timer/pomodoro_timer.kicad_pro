@@ -506,7 +506,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "production_files/",
+      "plot": "production_files/v2/",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "pomodoro_timer.step",
