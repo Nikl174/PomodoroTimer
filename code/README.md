@@ -15,3 +15,11 @@
     - which current cycle (Break, Productivity)
     - number of finished cycles
     - button pressed (interrupt)
+
+## Compile and Upload
+
+``` bash
+arduino-cli compile --fqbn megaTinyCore:megaavr:atxy2 code.ino
+
+arduino-cli upload -p /dev/ttyACM0 --fqbn megaTinyCore:megaavr:atxy2 -P serialupdi57k code.ino
+```
