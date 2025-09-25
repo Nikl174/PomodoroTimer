@@ -42,7 +42,7 @@ enum PomodoroState {
  */
 struct Pomodoro {
   unsigned int intervals_done;
-  unsigned int start_ms;
+  unsigned long start_ms;
   unsigned int interval_sec_passed;
   unsigned int pomodoro_sec;
   unsigned int short_break_sec;
@@ -55,6 +55,8 @@ struct Visualize {
   unsigned int none_r;
   unsigned int none_g;
   unsigned int none_b;
+  int brightness;
+  int factor;
 };
 
 Visualize vis;
@@ -63,13 +65,16 @@ Buttons buts;
 Pomodoro pom;
 tinyNeoPixel pixels = tinyNeoPixel(NUMPIXELS, NEO_PIN, NEO_GRB + NEO_KHZ800, pixelarray);
 
+// \brief update passed seconds in the pomodoro state of the current interval
+// TODO handle for integer overflow of millis
 void pomodoro_update_passed_sec(Pomodoro *pom) {
-  unsigned long ms = millis();
 
   if (pom->start_ms) {
-    unsigned long new_sec = (ms - pom->start_ms) / 1000;
+    // difference between start of timer and now in s
+    unsigned long new_sec = (millis() - pom->start_ms) / 1000;
 
     pom->interval_sec_passed += new_sec;
+    // if more then one second, set new point (because of the above +=)
     if (new_sec) pom->start_ms = millis();
 
     LOG_PRINTF("Updated Interval by '%i' to '%i'", new_sec, pom->interval_sec_passed);
@@ -78,6 +83,8 @@ void pomodoro_update_passed_sec(Pomodoro *pom) {
   }
 }
 
+// \brief toggles between start and stopping of the timer and initialy starts the pomodoro cycle
+// done by setting a starting-point (in ms)
 void pomodoro_start_stop(Pomodoro *pom) {
   switch (pom->interval_state) {
     case P_STATE_NONE:
@@ -120,6 +127,7 @@ int pomodoro_update_state(Pomodoro *pom, bool skip) {
         } else {
           pom->interval_state = P_STATE_SHORT_BREAK;
         }
+        // reset time and passed seconds for new state
         pom->interval_sec_passed = 0;
         pom->start_ms = millis();
         return 1;
@@ -129,7 +137,7 @@ int pomodoro_update_state(Pomodoro *pom, bool skip) {
       if (pom->interval_sec_passed >= pom->short_break_sec || skip) {
         // end if interval
         pom->interval_state = P_STATE_POMODORO;
-
+        // reset time and passed seconds for new state
         pom->interval_sec_passed = 0;
         pom->start_ms = millis();
         return 1;
@@ -140,27 +148,29 @@ int pomodoro_update_state(Pomodoro *pom, bool skip) {
         // end if interval
 
         pom->interval_state = P_STATE_POMODORO;
-
+        // reset time and passed seconds for new state
         pom->interval_sec_passed = 0;
         pom->start_ms = millis();
         return 1;
       }
       break;
     default:
+      // state not changed
       return 0;
   }
 }
 
-void visualise_pomodoro_time(Pomodoro *pom, tinyNeoPixel *pixel) {
+void visualise_pomodoro_time(Pomodoro *pom, tinyNeoPixel *pixel, Visualize *visual) {
   float scaled_time;
 
-
+  // visualisation depends on pomodoro state
   switch (pom->interval_state) {
     case P_STATE_POMODORO:
 
       // scale time to the number of LEDS
       //            ______________________________ Scale Factor
       scaled_time = ((float)NUMPIXELS / pom->pomodoro_sec) * pom->interval_sec_passed;
+      // set all pixel that are in the time interval with right color
       for (int i = 0; i < NUMPIXELS; i++) {
 
         if (scaled_time >= i)
@@ -171,7 +181,9 @@ void visualise_pomodoro_time(Pomodoro *pom, tinyNeoPixel *pixel) {
     case P_STATE_LONG_BREAK:
 
       // scale time to the number of LEDS
+      //            ______________________________ Scale Factor
       scaled_time = ((float)NUMPIXELS / pom->long_break_sec) * pom->interval_sec_passed;
+      // set all pixel that are in the time interval with right color
       for (int i = 0; i < NUMPIXELS; i++) {
 
         if (scaled_time >= i)
@@ -182,7 +194,9 @@ void visualise_pomodoro_time(Pomodoro *pom, tinyNeoPixel *pixel) {
     case P_STATE_SHORT_BREAK:
 
       // scale time to the number of LEDS
+      //            ______________________________ Scale Factor
       scaled_time = ((float)NUMPIXELS / pom->short_break_sec) * pom->interval_sec_passed;
+      // set all pixel that are in the time interval with right color
       for (int i = 0; i < NUMPIXELS; i++) {
 
         if (scaled_time >= i)
@@ -191,8 +205,11 @@ void visualise_pomodoro_time(Pomodoro *pom, tinyNeoPixel *pixel) {
 
       break;
   }
-  pixel->setBrightness(BRIGHTNESS);
+  // adjust brightness afterwards and show (send to LEDs)
+  pixel->setBrightness(visual->brightness);
   pixel->show();
+
+  // reset color values for pixels afterwards, but do not show!
   for (int i = 0; i < NUMPIXELS; i++) pixel->setPixelColor(i, 0, 0, 0);
 }
 
@@ -219,6 +236,8 @@ void setup() {
     .none_r = 255,
     .none_g = 0,
     .none_b = 0,
+    .brightness = BRIGHTNESS,
+    .factor = -COLOR_SCALE,
   };
 
 
@@ -237,13 +256,16 @@ void loop() {
   buts.restart = !digitalRead(RESTART_PIN);
 
 
+  // update passed seconds and pomodoro state, giving the skip button to maybe skip the current state
   pomodoro_update_passed_sec(&pom);
   pomodoro_update_state(&pom, buts.skip);
 
+  // toggle start/stop when button was pressed
   if (buts.start_stop) {
     pomodoro_start_stop(&pom);
   }
 
+  // completely reset the pomodoro timer
   if (buts.restart) {
     // TODO show Cycles while pressed
     pom.interval_sec_passed = 0;
@@ -252,7 +274,10 @@ void loop() {
     pom.interval_state = P_STATE_NONE;
   }
 
+  // 12 as an idle color cycle
   pixels.setPixelColor(NONE_LED, pixels.Color(vis.none_r, vis.none_g, vis.none_b));
+
+  // cycle through all colors
   if (vis.none_b == 0 && vis.none_r > 0) {
     vis.none_g += COLOR_SCALE;
     vis.none_r -= COLOR_SCALE;
@@ -264,8 +289,21 @@ void loop() {
     vis.none_b -= COLOR_SCALE;
   }
 
+  if (!pom.start_ms) {
+    // timer is paused, pulse brightness
+    if (vis.brightness >= BRIGHTNESS) {
+      vis.factor = -COLOR_SCALE;
+    } else if (vis.brightness <= COLOR_SCALE) {
+      vis.factor = COLOR_SCALE;
+    }
+    vis.brightness += vis.factor;
+  } else {
+    vis.brightness = BRIGHTNESS;
+  }
 
-  visualise_pomodoro_time(&pom, &pixels);
+
+  // show a loading circle for the current passed time in the interval
+  visualise_pomodoro_time(&pom, &pixels, &vis);
 
   delay(DELAY_MS);
 }
