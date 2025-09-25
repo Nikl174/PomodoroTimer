@@ -40,6 +40,10 @@ arduino-cli config init
 2. Next you need to download the core library
 
 ``` bash
+# add the index from the MegaTinyCore index
+arduino-cli config add board_manager.additional_urls http://drazzy.com/package_drazzy.com_index.json
+
+# now install the megaTinyCore library
 arduino-cli core install megaTinyCore:megaavr
 ```
 
