@@ -5,9 +5,9 @@
 // #define LONG_BREAK_SEC 1200 // 20 min
 // #define SHORT_BREAK_SEC 300 // 5 min
 // #define POMODORO_SEC 1500   // 25 min
-#define LONG_BREAK_SEC 12 // 20 min
-#define SHORT_BREAK_SEC 3 // 5 min
-#define POMODORO_SEC 15   // 25 min
+#define LONG_BREAK_SEC 24 // 20 min
+#define SHORT_BREAK_SEC 6 // 5 min
+#define POMODORO_SEC 24   // 25 min
 #define LONG_BREAK_INTERVALS 4
 
 // Which pin on the Arduino is connected to the NeoPixels?
