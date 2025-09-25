@@ -5,9 +5,11 @@
 // #define LONG_BREAK_SEC 1200 // 20 min
 // #define SHORT_BREAK_SEC 300 // 5 min
 // #define POMODORO_SEC 1500   // 25 min
+// times for the intervals
 #define LONG_BREAK_SEC 24 // 20 min
 #define SHORT_BREAK_SEC 6 // 5 min
 #define POMODORO_SEC 24   // 25 min
+// number of pomodoro intervals until the long break is started
 #define LONG_BREAK_INTERVALS 4
 
 // Which pin on the Arduino is connected to the NeoPixels?
@@ -27,10 +29,13 @@
 #define SHORT_BREAK_COLOR(pixels) pixels.Color(155, 155, 0)
 #define LONG_BREAK_COLOR(pixels) pixels.Color(0, 155, 155)
 
+// ID of the LED constantly changing color
 #define NONE_LED 11
 
+// scale factor for brightness and color
 #define COLOR_SCALE 3
 
+// initial brightness value
 #define BRIGHTNESS 80
 
 // comment out to remove debug messages

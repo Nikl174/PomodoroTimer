@@ -64,3 +64,11 @@ arduino-cli upload -p /dev/ttyACM0 --fqbn megaTinyCore:megaavr:atxy2 -P serialup
 ### Arduion IDE 1.X
 
 TODO
+
+##### Quentores Notes
+
+```bash
+python -m virtualenv .
+pip install pymcuprog==3.16.8.40
+pymcuprog write -t uart -u /dev/ttyACM0 -d attiny412 -f $HOME/.cache/arduino/sketches/23D6BB44CFB64DF5516B4531B04243FE/code.ino.h[27;5;106~ex --erase --verify
+```

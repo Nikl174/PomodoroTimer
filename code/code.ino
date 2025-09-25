@@ -213,6 +213,16 @@ void visualise_pomodoro_time(Pomodoro *pom, tinyNeoPixel *pixel, Visualize *visu
   for (int i = 0; i < NUMPIXELS; i++) pixel->setPixelColor(i, 0, 0, 0);
 }
 
+void count_button_start() {
+  buts.start_stop++;
+}
+void count_button_skip() {
+  buts.skip++;
+}
+void count_button_restart() {
+  buts.restart++;
+}
+
 
 void setup() {
 
@@ -246,23 +256,30 @@ void setup() {
   pinMode(START_PIN, INPUT_PULLUP);
   pinMode(RESTART_PIN, INPUT_PULLUP);
   pinMode(NEO_PIN, OUTPUT);
+  // register interrupts for buttons
+  attachInterrupt(digitalPinToInterrupt(START_PIN), count_button_start, RISING);
+  attachInterrupt(digitalPinToInterrupt(SKIP_PIN), count_button_skip, RISING);
+  attachInterrupt(digitalPinToInterrupt(RESTART_PIN), count_button_restart, RISING);
 }
 
 void loop() {
 
   // read each pin, ! because of pull up
-  buts.start_stop = !digitalRead(START_PIN);
-  buts.skip = !digitalRead(SKIP_PIN);
-  buts.restart = !digitalRead(RESTART_PIN);
+  // comment because interrupt for pins
+  // buts.start_stop = !digitalRead(START_PIN);
+  // buts.skip = !digitalRead(SKIP_PIN);
+  // buts.restart = !digitalRead(RESTART_PIN);
 
 
   // update passed seconds and pomodoro state, giving the skip button to maybe skip the current state
   pomodoro_update_passed_sec(&pom);
   pomodoro_update_state(&pom, buts.skip);
+  buts.skip = 0;
 
   // toggle start/stop when button was pressed
   if (buts.start_stop) {
     pomodoro_start_stop(&pom);
+    buts.start_stop = 0;
   }
 
   // completely reset the pomodoro timer
@@ -272,6 +289,8 @@ void loop() {
     pom.intervals_done = 0;
     pom.start_ms = 0;
     pom.interval_state = P_STATE_NONE;
+
+    buts.restart = 0;
   }
 
   // 12 as an idle color cycle
