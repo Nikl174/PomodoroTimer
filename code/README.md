@@ -40,6 +40,10 @@ arduino-cli config init
 2. Next you need to download the core library
 
 ``` bash
+# add the index from the MegaTinyCore index
+arduino-cli config add board_manager.additional_urls http://drazzy.com/package_drazzy.com_index.json
+
+# now install the megaTinyCore library
 arduino-cli core install megaTinyCore:megaavr
 ```
 
@@ -60,3 +64,11 @@ arduino-cli upload -p /dev/ttyACM0 --fqbn megaTinyCore:megaavr:atxy2 -P serialup
 ### Arduion IDE 1.X
 
 TODO
+
+##### Quentores Notes
+
+```bash
+python -m virtualenv .
+pip install pymcuprog==3.16.8.40
+pymcuprog write -t uart -u /dev/ttyACM0 -d attiny412 -f $HOME/.cache/arduino/sketches/23D6BB44CFB64DF5516B4531B04243FE/code.ino.h[27;5;106~ex --erase --verify
+```
