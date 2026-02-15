@@ -67,7 +67,7 @@ TODO
 
 ##### Quentores Notes
 
-- with the [Quentores](https://gitlab.fabcloud.org/pub/programmers/quentorres) you have a problem under Linux and Unix mentioned [here](https://gitlab.fabcloud.org/pub/programmers/quentorres#linux-uart-target-issues)
+- with the [Quentores](https://gitlab.fabcloud.org/pub/programmers/quentorres) you have a problem under Linux and MacOS mentioned [here](https://gitlab.fabcloud.org/pub/programmers/quentorres#linux-uart-target-issues)
 
 ```bash
 python -m virtualenv .
