@@ -67,8 +67,12 @@ TODO
 
 ##### Quentores Notes
 
+- with the [Quentores](https://gitlab.fabcloud.org/pub/programmers/quentorres) you have a problem under Linux and Unix mentioned [here](https://gitlab.fabcloud.org/pub/programmers/quentorres#linux-uart-target-issues)
+
 ```bash
 python -m virtualenv .
+source ./bin/activate.sh
 pip install pymcuprog==3.16.8.40
-pymcuprog write -t uart -u /dev/ttyACM0 -d attiny412 -f $HOME/.cache/arduino/sketches/23D6BB44CFB64DF5516B4531B04243FE/code.ino.h[27;5;106~ex --erase --verify
+#                                                       ___________________________________________________________________________ change this to your file
+pymcuprog write -t uart -u /dev/ttyACM0 -d attiny412 -f $HOME/.cache/arduino/sketches/23D6BB44CFB64DF5516B4531B04243FE/code.ino.hex --erase --verify
 ```
